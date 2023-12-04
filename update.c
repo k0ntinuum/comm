@@ -12,21 +12,27 @@ int safe_col(int c ) {
 int situation(int stage[rows][cols], int row,int col) {
     int sum = 0;
     sum += stage[safe_row(row - 1)][col];
-    sum += 2*stage[row][safe_col(col + 1)];
-    sum += 4*stage[safe_row(row + 1)][col];
-    sum += 8*stage[row][safe_col(col - 1)];
-    sum += 16*stage[row][col];
+    sum += states*stage[row][safe_col(col + 1)];
+    sum += states*states*stage[safe_row(row + 1)][col];
+    sum += states*states*states*stage[row][safe_col(col - 1)];
+    sum += states*states*states*states*stage[row][col];
     return sum;
 }
 void flip(int stage[rows][cols], int r,int c) {
     stage[r][c] = !stage[r][c];
     //stage[r][c] == 0 ? stage[r][c] = 1 : (stage[r][c] = 0);
 }
+void advance(int stage[rows][cols], int r,int c) {
+    stage[r][c] += 1;
+    if (stage[r][c] > states) stage[r][c] = 0;
+}
 
 void update_player(player* p , int stage[rows][cols]) {
     int s = situation(stage, p->row, p->col);
     int r = p->response[s];
-    flip(stage, p->row,p->col);
+    //flip(stage, p->row,p->col);
+    //advance(stage, p->row,p->col);
+    stage[p->row][p->col] = p->trace;
     switch (r) {
         case 0 : p->row = safe_row(p->row - 1);break;
         case 1 : p->row = safe_row(p->row - 1);p->col = safe_col(p->col + 1);break;
